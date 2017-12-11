@@ -11,14 +11,21 @@
     name: '{{ osquery_package }}'
     state: latest
 
-- name: osquery | config
+- name: osquery | flags
   copy:
     src: "{{item}}"
     dest: "/{{item}}"
     force: yes
   with_items:
-    - etc/osquery/osquery.conf
     - etc/osquery/osquery.flags
+  notify:
+    - Restart osqueryd
+
+- name: osquery | configuration
+  copy:
+    content: "{{ osquery_configuration | to_nice_json }}"
+    dest: etc/osquery/osquery.conf
+    force: yes
   notify:
     - Restart osqueryd
 
